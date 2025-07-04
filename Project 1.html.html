@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday, My Love!</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #4f8cff 0%, #b3e0ff 100%);
+      font-family: 'Segoe Script', cursive, sans-serif;
+      text-align: center;
+      color: #d72660; /* red shade for all text */
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      font-size: 3em;
+      margin-top: 40px;
+      text-shadow: 2px 2px 8px #fff;
+      color: #ffeb3b;
+    }
+    #typewriter { min-height: 1.2em; margin-top: 40px; font-size: 3em; text-shadow: 2px 2px 8px #fff; color: #ffeb3b; }
+    .scattered-gallery {
+      position: relative;
+      width: 100vw;
+      height: 60vh;
+      min-height: 400px;
+      margin-bottom: 40px;
+    }
+    .scattered-gallery .frame {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      background: #e3f2fd;
+      border: 6px solid #1976d2;
+      border-radius: 24px 60px 24px 60px;
+      box-shadow: 0 8px 32px rgba(215,38,96,0.18);
+      overflow: hidden;
+      transform: rotate(-8deg);
+      transition: transform 0.3s, box-shadow 0.3s;
+      z-index: 2;
+    }
+    .scattered-gallery .frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 18px 54px 18px 54px;
+      filter: brightness(0.97) saturate(1.1);
+    }
+    .scattered-gallery .frame:hover {
+      transform: scale(1.08) rotate(0deg);
+      box-shadow: 0 12px 40px #1976d2aa;
+      z-index: 10;
+    }
+    .frame1 { left: 8vw; top: 30px; transform: rotate(-10deg); }
+    .frame2 { left: 38vw; top: 80px; transform: rotate(7deg); }
+    .frame3 { right: 10vw; top: 10px; transform: rotate(-4deg); }
+    /* Add more .frameN classes for more images, with different left/right/top values and rotations */
+    .message {
+      font-size: 1.5em;
+      margin: 30px 10vw;
+      background: rgba(227,242,253,0.85);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 2px 8px #90caf9;
+      color: #0d47a1;
+    }
+    audio {
+      margin-top: 30px;
+      outline: none;
+      background: #e3f2fd;
+    }
+    .hearts {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .click-questions { margin-top: 20px; }
+    .question {
+      background: #e3f2fd;
+      border-radius: 12px;
+      margin: 12px 0;
+      padding: 16px;
+      font-size: 1.2em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #90caf9;
+      transition: background 0.2s;
+      position: relative;
+      color: #0d47a1;
+    }
+    .question:hover { background: #bbdefb; }
+    .answer {
+      margin-top: 10px;
+      color: #ffeb3b;
+      font-size: 1em;
+      font-style: italic;
+      display: none;
+    }
+    .draggable { cursor: grab; }
+    .timeline-section { margin: 40px auto; max-width: 700px; }
+    .timeline { display: flex; justify-content: center; align-items: center; gap: 40px; margin: 20px 0; }
+    .dot { width: 28px; height: 28px; background: #ffeb3b; border-radius: 50%; border: 3px solid #1976d2; cursor: pointer; transition: box-shadow 0.2s; }
+    .dot:hover { box-shadow: 0 0 16px #ffeb3b; }
+    .memory-text { font-size: 1.2em; color: #1976d2; min-height: 40px; margin-top: 10px; }
+    #confetti-canvas { pointer-events: none; }
+    #loveMeterContainer { background: #e3f2fd; border-radius: 15px; height: 30px; box-shadow: 0 2px 8px #90caf9; }
+    #loveMeterBar { background: linear-gradient(90deg,#ffeb3b,#ff4081); }
+  </style>
+</head>
+<body>
+  <canvas class="hearts"></canvas>
+  <h1 id="typewriter"></h1>
+  <div id="countdown" style="font-size:1.5em;color:#ffeb3b;margin-bottom:20px;"></div>
+  <div class="scattered-gallery">
+    <div class="frame frame1 draggable"><img src="your-photo1.jpg" alt="Memory 1"></div>
+    <div class="frame frame2 draggable"><img src="your-photo2.jpg" alt="Memory 2"></div>
+    <div class="frame frame3 draggable"><img src="your-photo3.jpg" alt="Memory 3"></div>
+    <!-- Add more frames/images as needed -->
+  </div>
+  <div class="timeline-section">
+    <h2>Our Memories Timeline</h2>
+    <div class="timeline">
+      <div class="dot" onclick="showMemory(0)"></div>
+      <div class="dot" onclick="showMemory(1)"></div>
+      <div class="dot" onclick="showMemory(2)"></div>
+    </div>
+    <div id="memoryText" class="memory-text"></div>
+  </div>
+  <div style="margin:30px auto;">
+    <button id="confettiBtn" style="padding:10px 30px;font-size:1.2em;background:#ffeb3b;color:#1976d2;border:none;border-radius:10px;">Celebrate with Confetti!</button>
+    <div id="confetti-canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:100;"></div>
+  </div>
+  <div style="margin:30px auto;">
+    <h2>Love Meter 💖</h2>
+    <div id="loveMeterContainer" style="width:300px;margin:0 auto;">
+      <div id="loveMeterBar" style="height:30px;width:0;background:#ffeb3b;border-radius:15px;transition:width 1s;"></div>
+    </div>
+    <button onclick="animateLoveMeter()" style="margin-top:10px;padding:8px 20px;font-size:1em;border-radius:8px;background:#1976d2;color:#fff;border:none;">Test Love Meter</button>
+  </div>
+  <div style="margin: 20px auto;">
+    <label for="songSelect"><b>Choose a song:</b></label>
+    <select id="songSelect">
+      <option value="Akhiyaan Gulaab.mp3">Akhiyaan Gulaab</option>
+      <option value="Jeene Laga Hu.mp3">Jeene Laga Hu</option>
+      <option value="Gone Gone Gone.mp3">Gone Gone Gone</option>
+      <option value="Tum Hi Ho.mp3">Tum Hi Ho</option>
+      <option value="Perfect.mp3">Perfect</option>
+      <!-- Add more songs here as needed -->
+    </select>
+  </div>
+  <audio id="audioPlayer" controls autoplay loop style="margin-bottom:30px;"></audio>
+  <div class="message">
+    <p>
+      To the most wonderful girlfriend in the world,<br>
+      Wishing you a day filled with laughter, love, and all your favorite things.<br>
+      Thank you for being the light of my life. I love you more than words can say!<br>
+      <b>Happy Birthday, sweetheart! 💕</b>
+    </p>
+  </div>
+  <div style="margin: 40px auto; max-width: 600px;">
+    <h2>Let's Play! 💡</h2>
+    <div class="click-questions">
+      <div class="question" onclick="toggleAnswer(0)">
+        What is my favorite memory with you?
+        <div class="answer" style="display:none;">Every moment with you is my favorite, but our first date will always be special! 💑</div>
+      </div>
+      <div class="question" onclick="toggleAnswer(1)">
+        What is your cutest habit?
+        <div class="answer" style="display:none;">The way you smile when you’re happy melts my heart every time! 😊</div>
+      </div>
+      <div class="question" onclick="toggleAnswer(2)">
+        What song reminds me of you?
+        <div class="answer" style="display:none;">All the songs on this page, but especially the one you love most! 🎶</div>
+      </div>
+      <div class="question" onclick="toggleAnswer(3)">
+        What do I wish for you this year?
+        <div class="answer" style="display:none;">Endless happiness, love, and all your dreams coming true! 🎉</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin: 40px auto; max-width: 600px;">
+    <h2>Special Video for You 🎥</h2>
+    <video id="specialVideo" width="100%" controls poster="video-thumbnail.jpg" style="border-radius:16px;box-shadow:0 2px 12px #f8bbd0;">
+      <source src="your-video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <script>
+    // Typewriter effect
+    const greeting = "Happy Birthday, My Love! 🎂💖";
+    let i = 0;
+    function typeWriter() {
+      if (i < greeting.length) {
+        document.getElementById("typewriter").innerHTML += greeting.charAt(i);
+        i++;
+        setTimeout(typeWriter, 80);
+      }
+    }
+    typeWriter();
+    // Drag & drop for photo frames
+    document.querySelectorAll('.draggable').forEach(frame => {
+      frame.onmousedown = function(e) {
+        let shiftX = e.clientX - frame.getBoundingClientRect().left;
+        let shiftY = e.clientY - frame.getBoundingClientRect().top;
+        frame.style.zIndex = 1000;
+        function moveAt(pageX, pageY) {
+          frame.style.left = pageX - shiftX + 'px';
+          frame.style.top = pageY - shiftY + 'px';
+        }
+        function onMouseMove(e) { moveAt(e.pageX, e.pageY); }
+        document.addEventListener('mousemove', onMouseMove);
+        frame.onmouseup = function() {
+          document.removeEventListener('mousemove', onMouseMove);
+          frame.onmouseup = null;
+          frame.style.zIndex = 2;
+        };
+      };
+      frame.ondragstart = () => false;
+    });
+    // Timeline memories
+    const memories = [
+      "We met and my world changed forever!",
+      "Our first trip together was magical.",
+      "Every day with you is a new adventure!"
+    ];
+    function showMemory(idx) {
+      document.getElementById('memoryText').textContent = memories[idx];
+    }
+    // Confetti animation
+    document.getElementById('confettiBtn').onclick = function() {
+      confettiBurst();
+    };
+    function confettiBurst() {
+      const confettiCanvas = document.getElementById('confetti-canvas');
+      confettiCanvas.innerHTML = '';
+      for(let i=0;i<120;i++) {
+        let conf = document.createElement('div');
+        conf.style.position = 'absolute';
+        conf.style.left = Math.random()*100+'vw';
+        conf.style.top = '-10px';
+        conf.style.width = '10px';
+        conf.style.height = '18px';
+        conf.style.background = 'hsl(' + (Math.random()*360) + ',90%,60%)';
+        conf.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+        conf.style.borderRadius = '3px';
+        conf.style.opacity = 0.8;
+        confettiCanvas.appendChild(conf);
+        setTimeout(function(){
+          conf.style.transition = 'top 1.8s cubic-bezier(.2,.8,.2,1), opacity 1.8s';
+          conf.style.top = (90+Math.random()*8)+'vh';
+          conf.style.opacity = 0;
+        }, 10);
+        setTimeout(function(){ conf.remove(); }, 2000);
+      }
+    }
+    // Love Meter
+    function animateLoveMeter() {
+      const bar = document.getElementById('loveMeterBar');
+      bar.style.width = '0';
+      setTimeout(()=>{ bar.style.width = '100%'; }, 100);
+    }
+    // Countdown Timer (set your birthday date below)
+    var birthday = new Date('2025-07-10T00:00:00'); // Change to her birthday
+    function updateCountdown() {
+      var now = new Date();
+      var diff = birthday - now;
+      if(diff > 0) {
+        var days = Math.floor(diff/(1000*60*60*24));
+        var hours = Math.floor((diff/(1000*60*60))%24);
+        var mins = Math.floor((diff/(1000*60))%60);
+        document.getElementById('countdown').textContent = 'Countdown: ' + days + ' days, ' + hours + ' hours, ' + mins + ' minutes left!';
+      } else {
+        document.getElementById('countdown').textContent = '';
+      }
+    }
+    setInterval(updateCountdown, 60000); updateCountdown();
+    // Song selector logic
+    var songSelect = document.getElementById('songSelect');
+    var audioPlayer = document.getElementById('audioPlayer');
+    // Set initial src for <audio> directly
+    audioPlayer.src = songSelect.value;
+    songSelect.onchange = function() {
+      audioPlayer.src = songSelect.value;
+      audioPlayer.load();
+      audioPlayer.play();
+    };
+    // Animated hearts background
+    const canvas = document.querySelector('.hearts');
+    const ctx = canvas.getContext('2d');
+    let hearts = [];
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    function Heart() {
+      this.x = Math.random() * canvas.width;
+      this.y = canvas.height + 20;
+      this.size = 20 + Math.random() * 20;
+      this.speed = 1 + Math.random() * 2;
+      this.alpha = 0.7 + Math.random() * 0.3;
+      this.color = 'rgba(255,235,59,' + this.alpha + ')'; // yellow hearts
+      this.tilt = Math.random() * Math.PI * 2;
+    }
+    Heart.prototype.draw = function() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.tilt);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, this.size/3, 0, this.size);
+      ctx.bezierCurveTo(this.size, this.size/3, this.size/2, -this.size/2, 0, 0);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.restore();
+    };
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (hearts.length < 40) hearts.push(new Heart());
+      for (let i = 0; i < hearts.length; i++) {
+        let h = hearts[i];
+        h.y -= h.speed;
+        h.tilt += 0.01;
+        h.draw();
+        if (h.y < -40) hearts.splice(i, 1);
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+    function toggleAnswer(idx) {
+      const answers = document.querySelectorAll('.click-questions .answer');
+      answers[idx].style.display = answers[idx].style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>
